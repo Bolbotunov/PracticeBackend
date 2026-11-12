@@ -1,0 +1,48 @@
+# Зависимости
+node_modules/
+package-lock.json.bak
+
+# Переменные окружения и секреты
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# Prisma: сгенерированный клиент и временные конфиги
+backend/src/generated/
+backend/prisma/generated/
+**/node_modules/.prisma/
+prisma7.config.ts
+
+# AI/IDE skills (Prisma, Claude, Windsurf, Cursor и т.п.)
+.agents/
+.claude/
+.windsurf/
+.cursor/
+skills-lock.json
+
+# Логи
+*.log
+npm-debug.log*
+logs/
+
+# Сборка и кэш
+dist/
+build/
+.next/
+.cache/
+coverage/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Локальные БД
+*.db
+*.db-journal
