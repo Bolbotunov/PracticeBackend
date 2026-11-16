@@ -2,16 +2,16 @@ import "dotenv/config";
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import morgan from "morgan";
 import authRoutes from "#src/routes/auth.routes.js";
 import { errorHandler } from "#src/middleware/errorHandler.js";
-import morgan from "morgan";
+import { env } from "#src/lib/env.js";
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    origin: env.FRONTEND_URL,
     credentials: true,
   }),
 );
@@ -20,12 +20,12 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use("/auth", authRoutes);
 
-app.get("/health", (req, res) => {
+app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+app.listen(env.PORT, () => {
+  console.log(`Server running on http://localhost:${env.PORT}`);
 });
