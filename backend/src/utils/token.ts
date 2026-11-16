@@ -29,3 +29,11 @@ export const generateTokens = (userId: string) => {
   return { accessToken, refreshToken };
 };
 
+export const verifyRefreshToken = (token: string) => {
+  try {
+    const decoded = jwt.verify(token, REFRESH_SECRET) as { sub: string };
+    return decoded.sub;
+  } catch (error) {
+    return null;
+  }
+};

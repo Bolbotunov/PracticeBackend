@@ -4,6 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "#src/routes/auth.routes.js";
 import { errorHandler } from "#src/middleware/errorHandler.js";
+import morgan from "morgan";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -16,7 +17,7 @@ app.use(
 );
 app.use(express.json());
 app.use(cookieParser());
-
+app.use(morgan("dev"));
 app.use("/auth", authRoutes);
 
 app.get("/health", (req, res) => {
