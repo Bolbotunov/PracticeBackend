@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { registerUser } from "../services/auth.service.js";
-import { RegisterInput } from "../schemas/auth.schema.js";
+import { registerUser } from "#src/services/auth.service.js";
+import { RegisterInput } from "#src/schemas/auth.schema.js";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -22,3 +22,4 @@ export const register = async (req: Request, res: Response) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 };
+
