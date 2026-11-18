@@ -6,7 +6,7 @@ import app from "#src/index.js";
 const TEST_EMAIL = "vitest_user@example.com";
 const TEST_PASSWORD = "superpassword123";
 
-describe("Auth API", () => {
+describe("Auth API Full Flow", () => {
   beforeAll(async () => {
     await prisma.user.deleteMany({
       where: { email: TEST_EMAIL },
@@ -48,7 +48,6 @@ describe("Auth API", () => {
         email: "not-an-email",
         password: "123",
       });
-
       expect(response.status).toBe(400);
       expect(response.body.error).toBe("Validation failed");
     });
@@ -66,8 +65,9 @@ describe("Auth API", () => {
 
       const cookies = response.headers["set-cookie"];
       expect(cookies).toBeDefined();
-      expect(cookies[0]).toContain("refreshToken=");
-      expect(cookies[0]).toContain("HttpOnly");
+      const cookiesArray = Array.isArray(cookies) ? cookies : [cookies];
+      expect(cookiesArray[0]).toContain("refreshToken=");
+      expect(cookiesArray[0]).toContain("HttpOnly");
     });
 
     it("должен возвращать 401 Unauthorized при неверном пароле", async () => {
@@ -80,68 +80,79 @@ describe("Auth API", () => {
       expect(response.body.error).toMatch(/Invalid email or password/i);
     });
   });
-});
 
-describe("Protected Routes and Session Management", () => {
-  let accessToken: string;
-  let refreshTokenCookie: string;
+  describe("Protected Routes and Session Management", () => {
+    let accessToken: string;
+    let refreshTokenCookie: string;
 
-  beforeAll(async () => {
-    const response = await request(app).post("/auth/login").send({
-      email: TEST_EMAIL,
-      password: TEST_PASSWORD,
-    });
+    beforeAll(async () => {
+      const response = await request(app).post("/auth/login").send({
+        email: TEST_EMAIL,
+        password: TEST_PASSWORD,
+      });
 
-    accessToken = response.body.accessToken;
-    const cookies = response.headers["set-cookie"];
-    if (cookies) {
-      refreshTokenCookie = cookies.find((cookie) => cookie.startsWith("refreshToken="))!;
-    }
-  });
-
-  describe("GET /auth/me", () => {
-    it("должен возвращать 401, если токен не передан", async () => {
-      const response = await request(app).get("/auth/me");
-      expect(response.status).toBe(401);
-    });
-
-    it("должен возвращать данные пользователя, если передан валидный токен", async () => {
-      const response = await request(app)
-        .get("/auth/me")
-        .set("Authorization", `Bearer ${accessToken}`);
-
-      expect(response.status).toBe(200);
-      expect(response.body.user.email).toBe(TEST_EMAIL);
-      expect(response.body.user).not.toHaveProperty("passwordHash");
-    });
-  });
-
-  describe("POST /auth/refresh", () => {
-    it("должен выдавать новый accessToken, если есть валидная кука refreshToken", async () => {
-      const response = await request(app).post("/auth/refresh").set("Cookie", [refreshTokenCookie]);
-
-      expect(response.status).toBe(200);
-      expect(response.body).toHaveProperty("accessToken");
-      expect(typeof response.body.accessToken).toBe("string");
-    });
-
-    it("должен возвращать 401, если куки refreshToken нет", async () => {
-      const response = await request(app).post("/auth/refresh");
-      expect(response.status).toBe(401);
-    });
-  });
-
-  describe("POST /auth/logout", () => {
-    it("должен очищать куку refreshToken", async () => {
-      const response = await request(app).post("/auth/logout").set("Cookie", [refreshTokenCookie]);
-
-      expect(response.status).toBe(200);
-
+      accessToken = response.body.accessToken;
       const cookies = response.headers["set-cookie"];
-      expect(cookies).toBeDefined();
-      const clearedCookie = cookies.find((c: string) => c.startsWith("refreshToken="));
-      expect(clearedCookie).toContain("refreshToken=;");
-      expect(clearedCookie).toContain("Expires=Thu, 01 Jan 1970");
+      if (cookies) {
+        const cookiesArray = Array.isArray(cookies) ? cookies : [cookies];
+        refreshTokenCookie = cookiesArray.find((cookie: string) =>
+          cookie.startsWith("refreshToken="),
+        )!;
+      }
+    });
+
+    describe("GET /auth/me", () => {
+      it("должен возвращать 401, если токен не передан", async () => {
+        const response = await request(app).get("/auth/me");
+        expect(response.status).toBe(401);
+      });
+
+      it("должен возвращать данные пользователя, если передан валидный токен", async () => {
+        const response = await request(app)
+          .get("/auth/me")
+          .set("Authorization", `Bearer ${accessToken}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body.user.email).toBe(TEST_EMAIL);
+        expect(response.body.user).not.toHaveProperty("passwordHash");
+      });
+    });
+
+    describe("POST /auth/refresh", () => {
+      it("должен выдавать новый accessToken, если есть валидная кука refreshToken", async () => {
+        const response = await request(app)
+          .post("/auth/refresh")
+          .set("Cookie", [refreshTokenCookie]);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toHaveProperty("accessToken");
+        expect(typeof response.body.accessToken).toBe("string");
+      });
+
+      it("должен возвращать 401, если куки refreshToken нет", async () => {
+        const response = await request(app).post("/auth/refresh");
+        expect(response.status).toBe(401);
+      });
+    });
+
+    describe("POST /auth/logout", () => {
+      it("должен очищать куку refreshToken", async () => {
+        const response = await request(app)
+          .post("/auth/logout")
+          .set("Cookie", [refreshTokenCookie]);
+
+        expect(response.status).toBe(200);
+
+        const cookies = response.headers["set-cookie"];
+        expect(cookies).toBeDefined();
+        const cookiesArray = Array.isArray(cookies) ? cookies : [cookies];
+        const clearedCookie = cookiesArray.find((cookie: string) =>
+          cookie.startsWith("refreshToken="),
+        );
+
+        expect(clearedCookie).toContain("refreshToken=;");
+        expect(clearedCookie).toContain("Expires=Thu, 01 Jan 1970");
+      });
     });
   });
 });
