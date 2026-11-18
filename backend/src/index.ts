@@ -26,6 +26,10 @@ app.get("/health", (_req, res) => {
 
 app.use(errorHandler);
 
-app.listen(env.PORT, () => {
-  console.log(`Server running on http://localhost:${env.PORT}`);
-});
+if (process.env.NODE_ENV !== "test") {
+  app.listen(env.PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${env.PORT}`);
+  });
+}
+
+export default app;
