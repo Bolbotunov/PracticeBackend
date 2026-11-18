@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
+import { AUTH } from "@/lib/paths";
 import { useAuth } from "@/context/AuthContext";
 
 interface LoginResponse {
@@ -35,7 +36,7 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const response = await apiFetch("/auth/login", {
+      const response = await apiFetch(`${AUTH.BASE}${AUTH.LOGIN}`, {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
