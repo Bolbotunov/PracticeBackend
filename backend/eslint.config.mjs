@@ -27,6 +27,6 @@ export default tseslint.config(
   },
 
   {
-    ignores: ["dist/", "src/generated/", "node_modules/", "frontend/"],
+    ignores: ["dist/", "src/generated/", "node_modules/", "../frontend/"],
   },
 );
