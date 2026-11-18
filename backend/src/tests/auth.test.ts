@@ -81,3 +81,67 @@ describe("Auth API", () => {
     });
   });
 });
+
+describe("Protected Routes and Session Management", () => {
+  let accessToken: string;
+  let refreshTokenCookie: string;
+
+  beforeAll(async () => {
+    const response = await request(app).post("/auth/login").send({
+      email: TEST_EMAIL,
+      password: TEST_PASSWORD,
+    });
+
+    accessToken = response.body.accessToken;
+    const cookies = response.headers["set-cookie"];
+    if (cookies) {
+      refreshTokenCookie = cookies.find((cookie) => cookie.startsWith("refreshToken="))!;
+    }
+  });
+
+  describe("GET /auth/me", () => {
+    it("должен возвращать 401, если токен не передан", async () => {
+      const response = await request(app).get("/auth/me");
+      expect(response.status).toBe(401);
+    });
+
+    it("должен возвращать данные пользователя, если передан валидный токен", async () => {
+      const response = await request(app)
+        .get("/auth/me")
+        .set("Authorization", `Bearer ${accessToken}`);
+
+      expect(response.status).toBe(200);
+      expect(response.body.user.email).toBe(TEST_EMAIL);
+      expect(response.body.user).not.toHaveProperty("passwordHash");
+    });
+  });
+
+  describe("POST /auth/refresh", () => {
+    it("должен выдавать новый accessToken, если есть валидная кука refreshToken", async () => {
+      const response = await request(app).post("/auth/refresh").set("Cookie", [refreshTokenCookie]);
+
+      expect(response.status).toBe(200);
+      expect(response.body).toHaveProperty("accessToken");
+      expect(typeof response.body.accessToken).toBe("string");
+    });
+
+    it("должен возвращать 401, если куки refreshToken нет", async () => {
+      const response = await request(app).post("/auth/refresh");
+      expect(response.status).toBe(401);
+    });
+  });
+
+  describe("POST /auth/logout", () => {
+    it("должен очищать куку refreshToken", async () => {
+      const response = await request(app).post("/auth/logout").set("Cookie", [refreshTokenCookie]);
+
+      expect(response.status).toBe(200);
+
+      const cookies = response.headers["set-cookie"];
+      expect(cookies).toBeDefined();
+      const clearedCookie = cookies.find((c: string) => c.startsWith("refreshToken="));
+      expect(clearedCookie).toContain("refreshToken=;");
+      expect(clearedCookie).toContain("Expires=Thu, 01 Jan 1970");
+    });
+  });
+});
