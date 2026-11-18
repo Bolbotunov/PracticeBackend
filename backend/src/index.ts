@@ -6,6 +6,7 @@ import morgan from "morgan";
 import authRoutes from "#src/routes/auth.routes.js";
 import { errorHandler } from "#src/middleware/errorHandler.js";
 import { env } from "#src/lib/env.js";
+import { AUTH } from "#src/lib/paths.js";
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 app.use(morgan("dev"));
-app.use("/auth", authRoutes);
+app.use(AUTH.BASE, authRoutes);
 
 app.get("/health", (_req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
