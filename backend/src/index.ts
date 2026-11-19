@@ -21,10 +21,6 @@ app.use(cookieParser());
 app.use(morgan("dev"));
 app.use(AUTH.BASE, authRoutes);
 
-app.get("/health", (_req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
-});
-
 app.use(errorHandler);
 
 if (process.env.NODE_ENV !== "test") {

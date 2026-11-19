@@ -5,4 +5,5 @@ export const AUTH = {
   LOGOUT: "/logout",
   REFRESH: "/refresh",
   ME: "/me",
+  PROFILE: "/profile",
 } as const;

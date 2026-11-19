@@ -6,6 +6,7 @@ import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { useAuth } from "@/context/AuthContext";
+import { Input } from "@/components/ui/input";
 
 interface LoginResponse {
   message: string;
@@ -71,29 +72,23 @@ export default function LoginPage() {
         {error && <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">{error}</div>}
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Email</label>
-            <input
-              type="email"
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full rounded border border-gray-300 p-2 text-gray-900 focus:border-blue-500 focus:outline-none"
-              placeholder="oleg@example.com"
-            />
-          </div>
+          <Input
+            variant="email"
+            label="Email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="oleg@example.com"
+          />
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">Пароль</label>
-            <input
-              type="password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full rounded border border-gray-300 p-2 text-gray-900 focus:border-blue-500 focus:outline-none"
-              placeholder="••••••••"
-            />
-          </div>
+          <Input
+            variant="password"
+            label="Пароль"
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="••••••••"
+          />
 
           <button
             type="submit"
@@ -106,7 +101,7 @@ export default function LoginPage() {
 
         <p className="mt-4 text-center text-sm text-gray-600">
           Нет аккаунта?{" "}
-          <Link href="/register" className="text-blue-600 hover:underline">
+          <Link href={AUTH.REGISTER} className="text-blue-600 hover:underline">
             Зарегистрироваться
           </Link>
         </p>
