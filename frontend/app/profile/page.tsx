@@ -32,9 +32,8 @@ export default function ProfilePage() {
 
     const fetchUser = async () => {
       try {
-        const response = await apiFetch(`${AUTH.BASE}${AUTH.ME}`, {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
+        const response = await apiFetch(`${AUTH.BASE}${AUTH.ME}`);
+
         if (!response.ok) throw new Error("Не удалось загрузить профиль");
         const data = await response.json();
         setUser(data.user);
