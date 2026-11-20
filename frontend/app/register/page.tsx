@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { GlobalLoader } from "@/components/layout/global-loader";
 import { ErrorResponse } from "@/types/api";
+import { Button } from "@/components/ui/button";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -97,13 +98,17 @@ export default function RegisterPage() {
             placeholder="Минимум 8 символов"
           />
 
-          <button
+          <Button
             type="submit"
+            variant="primary"
+            size="lg"
+            loading={isLoading}
+            loadingText="Загрузка..."
             disabled={isLoading}
-            className="w-full rounded bg-blue-600 p-2 font-semibold text-white hover:bg-blue-700 disabled:bg-blue-300"
+            className="w-full"
           >
             {isLoading ? "Загрузка..." : "Зарегистрироваться"}
-          </button>
+          </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">

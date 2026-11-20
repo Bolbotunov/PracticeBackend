@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { apiFetch } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { GlobalLoader } from "@/components/layout/global-loader";
+import { Button } from "@/components/ui/button";
 
 interface UserData {
   id: string;
@@ -87,19 +88,12 @@ export default function ProfilePage() {
         )}
 
         <div className="mt-8 flex flex-col gap-2">
-          <button
-            onClick={handleLogout}
-            className="w-full rounded bg-red-600 p-2 font-semibold text-white hover:bg-red-700"
-          >
+          <Button variant="danger" onClick={handleLogout}>
             Выйти из аккаунта
-          </button>
-
-          <button
-            onClick={() => router.push("/")}
-            className="w-full rounded bg-gray-200 p-2 font-semibold text-gray-800 hover:bg-gray-300"
-          >
+          </Button>
+          <Button variant="primary" onClick={() => router.push("/")}>
             На главную
-          </button>
+          </Button>
         </div>
       </div>
     </div>
