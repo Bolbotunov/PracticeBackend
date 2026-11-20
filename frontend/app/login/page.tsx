@@ -1,37 +1,31 @@
 "use client";
 
-import { useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
-
-interface LoginResponse {
-  message: string;
-  user: {
-    id: string;
-    email: string;
-    name?: string | null;
-  };
-  accessToken: string;
-}
-
-interface ErrorResponse {
-  error: string;
-}
+import { GlobalLoader } from "@/components/layout/global-loader";
+import { ErrorResponse, LoginResponse } from "@/types/api";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { setAccessToken } = useAuth();
+  const { accessToken, setAccessToken, isLoading: isAuthLoading } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!isAuthLoading && accessToken) {
+      router.push("/");
+    }
+  }, [accessToken, isAuthLoading, router]);
+
+  const handleSubmit = async (e: ChangeEvent) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
@@ -50,19 +44,23 @@ export default function LoginPage() {
       }
 
       const authData = data as LoginResponse;
-
       setAccessToken(authData.accessToken);
       router.push("/");
     } catch (err: unknown) {
-      if (err instanceof Error) {
-        setError(err.message);
-      } else {
-        setError("Произошла неизвестная ошибка");
-      }
+      if (err instanceof Error) setError(err.message);
+      else setError("Произошла неизвестная ошибка");
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isAuthLoading) {
+    return <GlobalLoader loading message="Проверка авторизации..." />;
+  }
+
+  if (accessToken) {
+    return <GlobalLoader loading message="Перенаправление..." />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
@@ -78,7 +76,7 @@ export default function LoginPage() {
             required
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            placeholder="oleg@example.com"
+            placeholder="example@example.com"
           />
 
           <Input

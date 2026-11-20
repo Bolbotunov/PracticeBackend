@@ -1,27 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { Input } from "@/components/ui/input";
-
-interface RegisterResponse {
-  message: string;
-  user: { id: string; email: string; name?: string };
-}
-interface ErrorResponse {
-  error: string;
-}
+import { useAuth } from "@/context/AuthContext";
+import { GlobalLoader } from "@/components/layout/global-loader";
+import { ErrorResponse } from "@/types/api";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { accessToken, isLoading: isAuthLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    if (!isAuthLoading && accessToken) {
+      router.push("/");
+    }
+  }, [accessToken, isAuthLoading, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,6 +56,14 @@ export default function RegisterPage() {
       setIsLoading(false);
     }
   };
+
+  if (isAuthLoading) {
+    return <GlobalLoader loading message="Проверка авторизации..." />;
+  }
+
+  if (accessToken) {
+    return <GlobalLoader loading message="Перенаправление..." />;
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
