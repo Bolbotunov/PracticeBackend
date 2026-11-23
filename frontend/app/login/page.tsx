@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { apiFetch } from "@/lib/api";
@@ -9,6 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { GlobalLoader } from "@/components/layout/global-loader";
 import { ErrorResponse, LoginResponse } from "@/types/api";
+import { Button } from "@/components/ui/button";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -25,7 +26,7 @@ export default function LoginPage() {
     }
   }, [accessToken, isAuthLoading, router]);
 
-  const handleSubmit = async (e: ChangeEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
@@ -88,13 +89,16 @@ export default function LoginPage() {
             placeholder="••••••••"
           />
 
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="w-full rounded bg-blue-600 p-2 font-semibold text-white hover:bg-blue-700 disabled:bg-blue-300"
+            variant="primary"
+            size="lg"
+            loading={isLoading}
+            loadingText="Загрузка..."
+            className="w-full"
           >
-            {isLoading ? "Загрузка..." : "Войти"}
-          </button>
+            Войти
+          </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
