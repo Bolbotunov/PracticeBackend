@@ -67,57 +67,55 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Регистрация</h1>
+    <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+      <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Регистрация</h1>
 
-        {error && <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            variant="text"
-            label="Имя (необязательно)"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            placeholder="Олег"
-          />
-          <Input
-            variant="email"
-            label="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="oleg@example.com"
-          />
-          <Input
-            variant="password"
-            label="Пароль"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Минимум 8 символов"
-          />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          variant="text"
+          label="Имя (необязательно)"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="Олег"
+        />
+        <Input
+          variant="email"
+          label="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="oleg@example.com"
+        />
+        <Input
+          variant="password"
+          label="Пароль"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="Минимум 8 символов"
+        />
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            loading={isLoading}
-            loadingText="Загрузка..."
-            disabled={isLoading}
-            className="w-full"
-          >
-            {isLoading ? "Загрузка..." : "Зарегистрироваться"}
-          </Button>
-        </form>
+        <Button
+          type="submit"
+          variant="primary"
+          size="lg"
+          loading={isLoading}
+          loadingText="Загрузка..."
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? "Загрузка..." : "Зарегистрироваться"}
+        </Button>
+      </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Уже есть аккаунт?{" "}
-          <Link href="/login" className="text-blue-600 hover:underline">
-            Войти
-          </Link>
-        </p>
-      </div>
+      <p className="mt-4 text-center text-sm text-gray-600">
+        Уже есть аккаунт?{" "}
+        <Link href={AUTH.LOGIN} className="text-blue-600 hover:underline">
+          Войти
+        </Link>
+      </p>
     </div>
   );
 }

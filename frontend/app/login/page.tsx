@@ -64,50 +64,47 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 p-4">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Вход в систему</h1>
+    <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
+      <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Вход в систему</h1>
 
-        {error && <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">{error}</div>}
+      {error && <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">{error}</div>}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input
-            variant="email"
-            label="Email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="example@example.com"
-          />
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input
+          variant="email"
+          label="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="example@example.com"
+        />
 
-          <Input
-            variant="password"
-            label="Пароль"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="••••••••"
-          />
+        <Input
+          variant="password"
+          label="Пароль"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="••••••••"
+        />
 
-          <Button
-            type="submit"
-            variant="primary"
-            size="lg"
-            loading={isLoading}
-            loadingText="Загрузка..."
-            className="w-full"
-          >
-            Войти
-          </Button>
-        </form>
+        <Button
+          type="submit"
+          variant="primary"
+          loading={isLoading}
+          loadingText="Загрузка..."
+          className="w-full"
+        >
+          Войти
+        </Button>
+      </form>
 
-        <p className="mt-4 text-center text-sm text-gray-600">
-          Нет аккаунта?{" "}
-          <Link href={AUTH.REGISTER} className="text-blue-600 hover:underline">
-            Зарегистрироваться
-          </Link>
-        </p>
-      </div>
+      <p className="mt-4 text-center text-sm text-gray-600">
+        Нет аккаунта?{" "}
+        <Link href={AUTH.REGISTER} className="text-blue-600 hover:underline">
+          Зарегистрироваться
+        </Link>
+      </p>
     </div>
   );
 }
