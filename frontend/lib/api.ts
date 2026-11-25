@@ -40,7 +40,12 @@ export const apiFetch = async (
     credentials: "include",
   });
 
-  if (response.status === 401 && !isRetry && endpoint !== `${AUTH.BASE}${AUTH.REFRESH}`) {
+  const isAuthEndpoint =
+    endpoint === `${AUTH.BASE}${AUTH.LOGIN}` ||
+    endpoint === `${AUTH.BASE}${AUTH.REGISTER}` ||
+    endpoint === `${AUTH.BASE}${AUTH.REFRESH}`;
+
+  if (response.status === 401 && !isRetry && !isAuthEndpoint) {
     if (!refreshPromise) {
       refreshPromise = (async () => {
         try {
@@ -74,4 +79,17 @@ export const apiFetch = async (
   }
 
   return response;
+};
+
+export const getApiError = async (response: Response, defaultMsg: string): Promise<string> => {
+  try {
+    const data = await response.json();
+    if (data.details) {
+      const firstFieldErrors = Object.values(data.details)[0] as string[];
+      return firstFieldErrors?.[0] || defaultMsg;
+    }
+    return data.error || defaultMsg;
+  } catch {
+    return defaultMsg;
+  }
 };

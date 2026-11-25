@@ -7,21 +7,15 @@ import { apiFetch } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { GlobalLoader } from "@/components/layout/global-loader";
 import { Button } from "@/components/ui/button";
-
-interface UserData {
-  id: string;
-  email: string;
-  name?: string | null;
-  createdAt: string;
-}
+import { UserResponse } from "@/types/api";
 
 export default function ProfilePage() {
   const { accessToken, setAccessToken, isLoading: isAuthLoading } = useAuth();
   const router = useRouter();
 
-  const [user, setUser] = useState<UserData | null>(null);
+  const [user, setUser] = useState<UserResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isAuthLoading) return;
@@ -32,6 +26,7 @@ export default function ProfilePage() {
     }
 
     const fetchUser = async () => {
+      setIsLoading(true);
       try {
         const response = await apiFetch(`${AUTH.BASE}${AUTH.ME}`);
 
@@ -66,34 +61,34 @@ export default function ProfilePage() {
   }
   return (
     <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Личный кабинет</h1>
+      <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">Личный кабинет</h1>
 
-        {user && (
-          <div className="space-y-4 text-gray-700">
-            <div className="border-b pb-2">
-              <span className="font-semibold">ID:</span> {user.id}
-            </div>
-            <div className="border-b pb-2">
-              <span className="font-semibold">Email:</span> {user.email}
-            </div>
-            <div className="border-b pb-2">
-              <span className="font-semibold">Имя:</span> {user.name || "Не указано"}
-            </div>
-            <div>
-              <span className="font-semibold">Дата регистрации:</span>{" "}
-              {new Date(user.createdAt).toLocaleDateString("ru-RU")}
-            </div>
+      {user && (
+        <div className="space-y-4 text-gray-700">
+          <div className="border-b pb-2">
+            <span className="font-semibold">ID:</span> {user.id}
           </div>
-        )}
-
-        <div className="mt-8 flex flex-col gap-2">
-          <Button variant="danger" onClick={handleLogout}>
-            Выйти из аккаунта
-          </Button>
-          <Button variant="primary" onClick={() => router.push("/")}>
-            На главную
-          </Button>
+          <div className="border-b pb-2">
+            <span className="font-semibold">Email:</span> {user.email}
+          </div>
+          <div className="border-b pb-2">
+            <span className="font-semibold">Имя:</span> {user.name || "Не указано"}
+          </div>
+          <div>
+            <span className="font-semibold">Дата регистрации:</span>{" "}
+            {new Date(user.createdAt).toLocaleDateString("ru-RU")}
+          </div>
         </div>
+      )}
+
+      <div className="mt-8 flex flex-col gap-2">
+        <Button variant="danger" onClick={handleLogout}>
+          Выйти из аккаунта
+        </Button>
+        <Button variant="primary" onClick={() => router.push("/")}>
+          На главную
+        </Button>
       </div>
+    </div>
   );
 }

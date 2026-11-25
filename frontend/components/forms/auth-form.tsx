@@ -5,31 +5,12 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { apiFetch } from "@/lib/api";
+import { apiFetch, getApiError } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { useAuth } from "@/context/AuthContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { GlobalLoader } from "@/components/layout/global-loader";
-import type { ErrorResponse, LoginResponse } from "@/types/api";
-
-const loginSchema = z.object({
-  email: z.string().min(1, "Email обязателен").email("Некорректный email"),
-  password: z
-    .string()
-    .min(1, "Пароль обязателен")
-    .min(8, "Пароль должен содержать минимум 8 символов"),
-});
-
-const registerSchema = z.object({
-  name: z.string().optional(),
-  email: z.string().min(1, "Email обязателен").email("Некорректный email"),
-  password: z
-    .string()
-    .min(1, "Пароль обязателен")
-    .min(8, "Пароль должен содержать минимум 8 символов"),
-});
+import { loginSchema, registerSchema, loginResponseSchema } from "@/schemas/auth.schema";
 
 type AuthFormData = {
   name?: string;
@@ -53,6 +34,7 @@ export function AuthForm({ mode }: AuthFormProps) {
       router.replace("/");
     }
   }, [accessToken, isAuthLoading, router]);
+
   const {
     control,
     handleSubmit,
@@ -68,11 +50,11 @@ export function AuthForm({ mode }: AuthFormProps) {
   });
 
   if (isAuthLoading) {
-    return <GlobalLoader loading message="Проверка авторизации..." />;
+    return null;
   }
 
   if (accessToken) {
-    return <GlobalLoader loading message="Перенаправление..." />;
+    return null;
   }
 
   const onSubmit = async (data: AuthFormData) => {
@@ -88,23 +70,18 @@ export function AuthForm({ mode }: AuthFormProps) {
         { method: "POST", body: JSON.stringify(body) },
       );
 
-      const result: unknown = await response.json();
-
       if (!response.ok) {
-        const errorData = result as ErrorResponse;
-
-        if (!isLogin && errorData.details) {
-          const firstFieldErrors = Object.values(errorData.details)[0];
-          throw new Error(firstFieldErrors?.[0] ?? "Ошибка при регистрации");
-        }
-
-        throw new Error(
-          errorData.error || (isLogin ? "Ошибка при входе" : "Ошибка при регистрации"),
+        const errorMsg = await getApiError(
+          response,
+          isLogin ? "Ошибка входа" : "Ошибка регистрации",
         );
+        throw new Error(errorMsg);
       }
 
+      const rawData = await response.json();
+
       if (isLogin) {
-        const authData = result as LoginResponse;
+        const authData = loginResponseSchema.parse(rawData);
         setAccessToken(authData.accessToken);
         router.push("/");
       } else {
