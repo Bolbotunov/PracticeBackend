@@ -1,12 +1,13 @@
+import { PASSWORD_MIN_LENGTH, PASSWORD_MAX_LENGTH, NAME_MAX_LENGTH } from "#src/lib/constants.js";
 import { z } from "zod";
 
 export const registerSchema = z.object({
   email: z.email("Invalid email address"),
   password: z
     .string()
-    .min(8, "Password must be at least 8 characters")
-    .max(16, "Password is too long"),
-  name: z.string().min(1).max(50).optional(),
+    .min(PASSWORD_MIN_LENGTH, `Password must be at least ${PASSWORD_MIN_LENGTH} characters`)
+    .max(PASSWORD_MAX_LENGTH, `Password is too long (max ${PASSWORD_MAX_LENGTH})`),
+  name: z.string().min(1).max(NAME_MAX_LENGTH).optional(),
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;

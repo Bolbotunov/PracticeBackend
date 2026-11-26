@@ -2,7 +2,7 @@ export interface UserResponse {
   id: string;
   email: string;
   name?: string | null;
-  createdAt?: string;
+  createdAt: string;
 }
 
 export interface AuthResponse {
