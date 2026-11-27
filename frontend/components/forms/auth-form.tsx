@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { cn } from "@/utils/cn";
 import { apiFetch, getApiError } from "@/lib/api";
 import { AUTH } from "@/lib/paths";
 import { useAuth } from "@/context/AuthContext";
@@ -95,14 +96,20 @@ export function AuthForm({ mode }: AuthFormProps) {
   };
 
   return (
-    <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-      <h1 className="mb-6 text-center text-2xl font-bold text-gray-800">
+    <div className="w-full max-w-md rounded-lg bg-[var(--color-surface)] p-8 shadow-md">
+      <h1 className="mb-6 text-center text-2xl font-bold text-[var(--color-text-default)]">
         {isLogin ? "Вход в систему" : "Регистрация"}
       </h1>
 
-      {serverError && (
-        <div className="mb-4 rounded bg-red-100 p-3 text-sm text-red-700">{serverError}</div>
-      )}
+      <div
+        className={cn(
+          "mb-4 rounded bg-red-100 p-3 text-sm text-red-700",
+          !serverError && "invisible",
+        )}
+        aria-live="polite"
+      >
+        {serverError || "\u00A0"}
+      </div>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         {!isLogin && (
@@ -172,18 +179,18 @@ export function AuthForm({ mode }: AuthFormProps) {
         </Button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
+      <p className="mt-4 text-center text-sm text-[var(--color-text-muted)]">
         {isLogin ? (
           <>
             Нет аккаунта?{" "}
-            <Link href={AUTH.REGISTER} className="text-blue-600 hover:underline">
+            <Link href={AUTH.REGISTER} className="text-[var(--color-text-default)] underline hover:text-[var(--color-text-muted)]">
               Зарегистрироваться
             </Link>
           </>
         ) : (
           <>
             Уже есть аккаунт?{" "}
-            <Link href={AUTH.LOGIN} className="text-blue-600 hover:underline">
+            <Link href={AUTH.LOGIN} className="text-[var(--color-text-default)] underline hover:text-[var(--color-text-muted)]">
               Войти
             </Link>
           </>
